@@ -9,25 +9,69 @@ Note: * Elevated privileges required for this step, please have your administrat
 ```
 
 ## PRE INSTALL SETUP
+
+ssh-keygen -t rsa -b 4096
 ### Environment Variables Used 
 ```
-export AZURE_REGION=<location>
-export CLUSTER_NAME=<cluster_name>
-export BASE_DOMAIN=<domain_name>
+export AZURE_REGION=westeurope
+export CLUSTER_NAME=sandbox
+export BASE_DOMAIN=hitho.de
+export INFRA_ID=openshift
 export PRVT_DNS="${CLUSTER_NAME}.${BASE_DOMAIN}"
-export RESOURCE_GROUP=<resource_group_name>
-export VNET_RG=<virtual_network_resource_group_name>
-export VNET=<virtual_network_name>
-export INSTALL=<INSTALL_DIRECTORY>
+export RESOURCE_GROUP=rg-euw-cluster
+export VNET_RG=rg-euw-network
+export VNET=vnet-westus-001
+export INSTALL=~/installation
 export KUBECONFIG=${INSTALL}/auth/kubeconfig
-export SSH_KEY=`cat </path/to/.ssh/id_rsa.pub>`
-export STORAGE_SA=<storageaccount>
-export MAN_ID=<managed_identity_name>
-export MASTER_SUB=<master_subnet_name>
-export WORKER_SUB=<worker_subnet_name>
-export INT_LB=<internal_lb_ip>
-export INT_APPS_LB=<internal_apps_lb_ip>
+export SSH_KEY=`cat ~/.ssh/id_rsa.pub`
+export STORAGE_SA=vhdsa
+export MASTER_SUB=master-subnet
+export WORKER_SUB=worker-subnet
+
+export MAN_ID=openshift-identity
+
+export INT_LB=10.0.10.110
+export INT_APPS_LB=10.0.20.120
+
+{
+  "appId": "c67503ac-0311-49e7-ba4f-c6ed69b0d79f",
+  "displayName": "openshift-sp",
+  "password": "ZU18Q~beP0asff6TeLApWrNs5DAvVfI~LgcHVbTF",
+  "tenant": "a36d4dc0-fd05-44bf-9a9b-c58d27ee96db"
+}
+az role assignment create --role "User Access Administrator"  --assignee-object-id $(az ad sp list --filter "appId eq 'c67503ac-0311-49e7-ba4f-c6ed69b0d79f'" | jq '.[0].id' -r)
+
+{
+  "canDelegate": null,
+  "condition": null,
+  "conditionVersion": null,
+  "description": null,
+  "id": "/subscriptions/b872424d-d9b1-4f02-9ce6-eba1e0f9e731/providers/Microsoft.Authorization/roleAssignments/28e210de-f52e-47ee-8cc8-cf1d26c5c959",
+  "name": "28e210de-f52e-47ee-8cc8-cf1d26c5c959",
+  "principalId": "32741da2-c85b-44d8-8f53-4bc9b55ea762",
+  "principalType": "ServicePrincipal",
+  "roleDefinitionId": "/subscriptions/b872424d-d9b1-4f02-9ce6-eba1e0f9e731/providers/Microsoft.Authorization/roleDefinitions/18d7d88d-d35e-4fb5-a5c3-7773c20a72d9",
+  "scope": "/subscriptions/b872424d-d9b1-4f02-9ce6-eba1e0f9e731",
+  "type": "Microsoft.Authorization/roleAssignments"
+}
+
+az ad app permission add --id c67503ac-0311-49e7-ba4f-c6ed69b0d79f --api 00000002-0000-0000-c000-000000000000 --api-permissions 824c81eb-e3f8-4ee6-8f6d-de7f50d565b7=Role
+
+az ad app permission grant --id c67503ac-0311-49e7-ba4f-c6ed69b0d79f --api 00000002-0000-0000-c000-000000000000 --scope /subscriptions/b872424d-d9b1-4f02-9ce6-eba1e0f9e731/resourceGroups/rg-euw-cluster
+
+{
+  "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#oauth2PermissionGrants/$entity",
+  "clientId": "32741da2-c85b-44d8-8f53-4bc9b55ea762",
+  "consentType": "AllPrincipals",
+  "id": "oh10MlvI2ESPU0vJtV6nYvBhdYESxOhGk6Bl8B7ba3Q",
+  "principalId": null,
+  "resourceId": "817561f0-c412-46e8-93a0-65f01edb6b74",
+  "scope": "/subscriptions/b872424d-d9b1-4f02-9ce6-eba1e0f9e731/resourceGroups/rg-euw-cluster"
+}
+
 ```
+{"auths":{"cloud.openshift.com":{"auth":"b3BlbnNoaWZ0LXJlbGVhc2UtZGV2K29jbV9hY2Nlc3NfZGVmMTVmM2E4NzQ2NDMzMGE2YzExNDIzOWY1ZTEyMzY6NEJXNUdDS0IyWEs2OTRBUVpCOFFCSUY3NFUxUEhIQlhaNE9TUE9MTjVMUzNISTFZMDY4TE8yT1EzVUJHN0s2Sw==","email":"extern.thomas.hirmer@volkswagen.de"},"quay.io":{"auth":"b3BlbnNoaWZ0LXJlbGVhc2UtZGV2K29jbV9hY2Nlc3NfZGVmMTVmM2E4NzQ2NDMzMGE2YzExNDIzOWY1ZTEyMzY6NEJXNUdDS0IyWEs2OTRBUVpCOFFCSUY3NFUxUEhIQlhaNE9TUE9MTjVMUzNISTFZMDY4TE8yT1EzVUJHN0s2Sw==","email":"extern.thomas.hirmer@volkswagen.de"},"registry.connect.redhat.com":{"auth":"fHVoYy1wb29sLWVjOWYxMzI3LTE1YTctNDQ5Yy1iNTczLWVjNzI2MTUxMmEwZDpleUpoYkdjaU9pSlNVelV4TWlKOS5leUp6ZFdJaU9pSXhOR0UyTnpjNFptSXdNV0UwT0RFeVlqQXlPRFF3TTJRd09HVmhNakkzTUNKOS5zaVNuQV9aaUtNVDlLcXAxYWtIOVlGMHlGMGdXajY2TVJPa1htVXRPc0FBdDhVLXlXN3k3YVplbG5wNDRhLWJtVndqeG96NlZuLUxlMzZna2Z4YkVyYmlwOThZRFc4eWxuMGFVUDNsa0JJS2g4M3NycXk2YklRdnoyTWJPNUd6Z3FTblUzTGpYdWx0N2ZvRUZ6OXpUOTItcnpHRWZwTlNxSzdhczlmbFhWcTlkWU4tRDRLZmpuR0c5Zkhna3BmZDBrNDlvcmhiZWhjQlJlUVV1Y24wV2tocmNoMUNxS0RrM095WmlxOEpZTEtYRXBUbTc0TE0waVNYUFVXXzdDdGJoNkVkUjlLRTZIQzl4MXM3ek9CUkFORk9aM1Z3OUxyd3NKeTd1NzEyWVJCOXUzeUZzc3JrVjczZFUzZ2ppOFhmLU5oNE1CMkRMOFFvdHdnUHl1cnFUT1EweHNFR3p2Vkh0SEhBcWRjRmxLUm43RjlqWXhtQzB0MGtLM2VCU1lmTG9XdjBmVmdBQk1Fd3RCLW11WmlhUjNmVVk0RndkYVJocjVGcWNTbjRHc1h1UUc4bXBaVDFncjh4TjI2TUFQMVRHeWZOZ2R5aDRxeFFaY1NnU05jbENlS3Y1Zk5LRVd0T3ZBZnVJZURqZlR5T282V3cyVVRnbzh4c2tJZEl0dk1aZ19tRmFfRy1YWWEzd1lablRGNnF3Z0w1VFJzUGxYTmtXOTBxSXo3VkpWVHZ6UHlPZi1maktNX0FOcHJINWo1R1A0NEt6cWtZTjFfRHdaQlA3WkFDR2NUTnZQRTBLMk44eVNCUllOWGppSmJRdjlxWkJwODlVNzNyZ3Q1ZE5ncW1ycktremEtcVNwRGwtTFI4Zk5KeGJkbXd4czJra21YYXhYZEw1U3VzaHRjMA==","email":"extern.thomas.hirmer@volkswagen.de"},"registry.redhat.io":{"auth":"fHVoYy1wb29sLWVjOWYxMzI3LTE1YTctNDQ5Yy1iNTczLWVjNzI2MTUxMmEwZDpleUpoYkdjaU9pSlNVelV4TWlKOS5leUp6ZFdJaU9pSXhOR0UyTnpjNFptSXdNV0UwT0RFeVlqQXlPRFF3TTJRd09HVmhNakkzTUNKOS5zaVNuQV9aaUtNVDlLcXAxYWtIOVlGMHlGMGdXajY2TVJPa1htVXRPc0FBdDhVLXlXN3k3YVplbG5wNDRhLWJtVndqeG96NlZuLUxlMzZna2Z4YkVyYmlwOThZRFc4eWxuMGFVUDNsa0JJS2g4M3NycXk2YklRdnoyTWJPNUd6Z3FTblUzTGpYdWx0N2ZvRUZ6OXpUOTItcnpHRWZwTlNxSzdhczlmbFhWcTlkWU4tRDRLZmpuR0c5Zkhna3BmZDBrNDlvcmhiZWhjQlJlUVV1Y24wV2tocmNoMUNxS0RrM095WmlxOEpZTEtYRXBUbTc0TE0waVNYUFVXXzdDdGJoNkVkUjlLRTZIQzl4MXM3ek9CUkFORk9aM1Z3OUxyd3NKeTd1NzEyWVJCOXUzeUZzc3JrVjczZFUzZ2ppOFhmLU5oNE1CMkRMOFFvdHdnUHl1cnFUT1EweHNFR3p2Vkh0SEhBcWRjRmxLUm43RjlqWXhtQzB0MGtLM2VCU1lmTG9XdjBmVmdBQk1Fd3RCLW11WmlhUjNmVVk0RndkYVJocjVGcWNTbjRHc1h1UUc4bXBaVDFncjh4TjI2TUFQMVRHeWZOZ2R5aDRxeFFaY1NnU05jbENlS3Y1Zk5LRVd0T3ZBZnVJZURqZlR5T282V3cyVVRnbzh4c2tJZEl0dk1aZ19tRmFfRy1YWWEzd1lablRGNnF3Z0w1VFJzUGxYTmtXOTBxSXo3VkpWVHZ6UHlPZi1maktNX0FOcHJINWo1R1A0NEt6cWtZTjFfRHdaQlA3WkFDR2NUTnZQRTBLMk44eVNCUllOWGppSmJRdjlxWkJwODlVNzNyZ3Q1ZE5ncW1ycktremEtcVNwRGwtTFI4Zk5KeGJkbXd4czJra21YYXhYZEw1U3VzaHRjMA==","email":"extern.thomas.hirmer@volkswagen.de"}}}
+
 ### DNS Requirements
 Resolves to ${INT_LB} 
 ```
