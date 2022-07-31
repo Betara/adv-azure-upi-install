@@ -1,0 +1,41 @@
+apiVersion: v1
+baseDomain: hitho.de
+compute:
+- architecture: amd64
+  hyperthreading: Enabled
+  name: worker
+  platform: {}
+  replicas: 3
+controlPlane:
+  architecture: amd64
+  hyperthreading: Enabled
+  name: master
+  platform: {}
+  replicas: 3
+metadata:
+  creationTimestamp: null
+  name: sandbox
+networking:
+  clusterNetwork:
+  - cidr: 10.128.0.0/14
+    hostPrefix: 23
+  machineNetwork:
+  - cidr: 24
+  networkType: OpenShiftSDN
+  serviceNetwork:
+  - 172.30.0.0/16
+platform:
+  azure:
+    cloudName: AzurePublicCloud
+    baseDomainResourceGroupName: RED-HAT-OCP001
+    resourceGroupName: rg-euw-cluster
+    computeSubnet: worker-subnet
+    controlPlaneSubnet: master-subnet
+    networkResourceGroupName: rg-euw-network
+    virtualNetwork: vnet-westus-001
+    outboundType: UserDefinedRouting
+    region: westeurope
+publish: Internal
+pullSecret: '{"auths":{"cloud.openshift.com":{"auth":"b3BlbnNoaWZ0LXJlbGVhc2UtZGV2K29jbV9hY2Nlc3NfZGVmMTVmM2E4NzQ2NDMzMGE2YzExNDIzOWY1ZTEyMzY6NEJXNUdDS0IyWEs2OTRBUVpCOFFCSUY3NFUxUEhIQlhaNE9TUE9MTjVMUzNISTFZMDY4TE8yT1EzVUJHN0s2Sw==","email":"extern.thomas.hirmer@volkswagen.de"},"quay.io":{"auth":"b3BlbnNoaWZ0LXJlbGVhc2UtZGV2K29jbV9hY2Nlc3NfZGVmMTVmM2E4NzQ2NDMzMGE2YzExNDIzOWY1ZTEyMzY6NEJXNUdDS0IyWEs2OTRBUVpCOFFCSUY3NFUxUEhIQlhaNE9TUE9MTjVMUzNISTFZMDY4TE8yT1EzVUJHN0s2Sw==","email":"extern.thomas.hirmer@volkswagen.de"},"registry.connect.redhat.com":{"auth":"fHVoYy1wb29sLWVjOWYxMzI3LTE1YTctNDQ5Yy1iNTczLWVjNzI2MTUxMmEwZDpleUpoYkdjaU9pSlNVelV4TWlKOS5leUp6ZFdJaU9pSXhOR0UyTnpjNFptSXdNV0UwT0RFeVlqQXlPRFF3TTJRd09HVmhNakkzTUNKOS5zaVNuQV9aaUtNVDlLcXAxYWtIOVlGMHlGMGdXajY2TVJPa1htVXRPc0FBdDhVLXlXN3k3YVplbG5wNDRhLWJtVndqeG96NlZuLUxlMzZna2Z4YkVyYmlwOThZRFc4eWxuMGFVUDNsa0JJS2g4M3NycXk2YklRdnoyTWJPNUd6Z3FTblUzTGpYdWx0N2ZvRUZ6OXpUOTItcnpHRWZwTlNxSzdhczlmbFhWcTlkWU4tRDRLZmpuR0c5Zkhna3BmZDBrNDlvcmhiZWhjQlJlUVV1Y24wV2tocmNoMUNxS0RrM095WmlxOEpZTEtYRXBUbTc0TE0waVNYUFVXXzdDdGJoNkVkUjlLRTZIQzl4MXM3ek9CUkFORk9aM1Z3OUxyd3NKeTd1NzEyWVJCOXUzeUZzc3JrVjczZFUzZ2ppOFhmLU5oNE1CMkRMOFFvdHdnUHl1cnFUT1EweHNFR3p2Vkh0SEhBcWRjRmxLUm43RjlqWXhtQzB0MGtLM2VCU1lmTG9XdjBmVmdBQk1Fd3RCLW11WmlhUjNmVVk0RndkYVJocjVGcWNTbjRHc1h1UUc4bXBaVDFncjh4TjI2TUFQMVRHeWZOZ2R5aDRxeFFaY1NnU05jbENlS3Y1Zk5LRVd0T3ZBZnVJZURqZlR5T282V3cyVVRnbzh4c2tJZEl0dk1aZ19tRmFfRy1YWWEzd1lablRGNnF3Z0w1VFJzUGxYTmtXOTBxSXo3VkpWVHZ6UHlPZi1maktNX0FOcHJINWo1R1A0NEt6cWtZTjFfRHdaQlA3WkFDR2NUTnZQRTBLMk44eVNCUllOWGppSmJRdjlxWkJwODlVNzNyZ3Q1ZE5ncW1ycktremEtcVNwRGwtTFI4Zk5KeGJkbXd4czJra21YYXhYZEw1U3VzaHRjMA==","email":"extern.thomas.hirmer@volkswagen.de"},"registry.redhat.io":{"auth":"fHVoYy1wb29sLWVjOWYxMzI3LTE1YTctNDQ5Yy1iNTczLWVjNzI2MTUxMmEwZDpleUpoYkdjaU9pSlNVelV4TWlKOS5leUp6ZFdJaU9pSXhOR0UyTnpjNFptSXdNV0UwT0RFeVlqQXlPRFF3TTJRd09HVmhNakkzTUNKOS5zaVNuQV9aaUtNVDlLcXAxYWtIOVlGMHlGMGdXajY2TVJPa1htVXRPc0FBdDhVLXlXN3k3YVplbG5wNDRhLWJtVndqeG96NlZuLUxlMzZna2Z4YkVyYmlwOThZRFc4eWxuMGFVUDNsa0JJS2g4M3NycXk2YklRdnoyTWJPNUd6Z3FTblUzTGpYdWx0N2ZvRUZ6OXpUOTItcnpHRWZwTlNxSzdhczlmbFhWcTlkWU4tRDRLZmpuR0c5Zkhna3BmZDBrNDlvcmhiZWhjQlJlUVV1Y24wV2tocmNoMUNxS0RrM095WmlxOEpZTEtYRXBUbTc0TE0waVNYUFVXXzdDdGJoNkVkUjlLRTZIQzl4MXM3ek9CUkFORk9aM1Z3OUxyd3NKeTd1NzEyWVJCOXUzeUZzc3JrVjczZFUzZ2ppOFhmLU5oNE1CMkRMOFFvdHdnUHl1cnFUT1EweHNFR3p2Vkh0SEhBcWRjRmxLUm43RjlqWXhtQzB0MGtLM2VCU1lmTG9XdjBmVmdBQk1Fd3RCLW11WmlhUjNmVVk0RndkYVJocjVGcWNTbjRHc1h1UUc4bXBaVDFncjh4TjI2TUFQMVRHeWZOZ2R5aDRxeFFaY1NnU05jbENlS3Y1Zk5LRVd0T3ZBZnVJZURqZlR5T282V3cyVVRnbzh4c2tJZEl0dk1aZ19tRmFfRy1YWWEzd1lablRGNnF3Z0w1VFJzUGxYTmtXOTBxSXo3VkpWVHZ6UHlPZi1maktNX0FOcHJINWo1R1A0NEt6cWtZTjFfRHdaQlA3WkFDR2NUTnZQRTBLMk44eVNCUllOWGppSmJRdjlxWkJwODlVNzNyZ3Q1ZE5ncW1ycktremEtcVNwRGwtTFI4Zk5KeGJkbXd4czJra21YYXhYZEw1U3VzaHRjMA==","email":"extern.thomas.hirmer@volkswagen.de"}}}
+sshKey: |
+  ssh-rsa ...
