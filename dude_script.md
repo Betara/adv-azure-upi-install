@@ -69,6 +69,37 @@ az ad app permission grant --id c67503ac-0311-49e7-ba4f-c6ed69b0d79f --api 00000
   "scope": "/subscriptions/b872424d-d9b1-4f02-9ce6-eba1e0f9e731/resourceGroups/rg-euw-cluster"
 }
 
+ az identity create -g rg-euw-cluster -n openshift-identity
+{
+  "clientId": "f2623944-ffc1-4bd2-af8d-ac96da2cd298",
+  "id": "/subscriptions/b872424d-d9b1-4f02-9ce6-eba1e0f9e731/resourcegroups/rg-euw-cluster/providers/Microsoft.ManagedIdentity/userAssignedIdentities/openshift-identity",
+  "location": "westeurope",
+  "name": "openshift-identity",
+  "principalId": "3354e839-9848-48f8-b031-2fa4c8623586",
+  "resourceGroup": "rg-euw-cluster",
+  "tags": {},
+  "tenantId": "a36d4dc0-fd05-44bf-9a9b-c58d27ee96db",
+  "type": "Microsoft.ManagedIdentity/userAssignedIdentities"
+}
+
+ export PRINCIPAL_ID=`az identity show -g ${RESOURCE_GROUP} -n ${INFRA_ID}-identity --query principalId --out tsv`
+ export RESOURCE_GROUP_ID=`az group show -g ${RESOURCE_GROUP} --query id --out tsv`
+
+z role assignment create --assignee "${PRINCIPAL_ID}" --role 'Contributor' --scope "${RESOURCE_GROUP_ID}"
+{
+  "canDelegate": null,
+  "condition": null,
+  "conditionVersion": null,
+  "description": null,
+  "id": "/subscriptions/b872424d-d9b1-4f02-9ce6-eba1e0f9e731/resourceGroups/rg-euw-cluster/providers/Microsoft.Authorization/roleAssignments/ae978666-6ed8-4ab4-a469-61663cdf9f11",
+  "name": "ae978666-6ed8-4ab4-a469-61663cdf9f11",
+  "principalId": "3354e839-9848-48f8-b031-2fa4c8623586",
+  "principalType": "ServicePrincipal",
+  "resourceGroup": "rg-euw-cluster",
+  "roleDefinitionId": "/subscriptions/b872424d-d9b1-4f02-9ce6-eba1e0f9e731/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c",
+  "scope": "/subscriptions/b872424d-d9b1-4f02-9ce6-eba1e0f9e731/resourceGroups/rg-euw-cluster",
+  "type": "Microsoft.Authorization/roleAssignments"
+}
 ```
 {"auths":{"cloud.openshift.com":{"auth":"b3BlbnNoaWZ0LXJlbGVhc2UtZGV2K29jbV9hY2Nlc3NfZGVmMTVmM2E4NzQ2NDMzMGE2YzExNDIzOWY1ZTEyMzY6NEJXNUdDS0IyWEs2OTRBUVpCOFFCSUY3NFUxUEhIQlhaNE9TUE9MTjVMUzNISTFZMDY4TE8yT1EzVUJHN0s2Sw==","email":"extern.thomas.hirmer@volkswagen.de"},"quay.io":{"auth":"b3BlbnNoaWZ0LXJlbGVhc2UtZGV2K29jbV9hY2Nlc3NfZGVmMTVmM2E4NzQ2NDMzMGE2YzExNDIzOWY1ZTEyMzY6NEJXNUdDS0IyWEs2OTRBUVpCOFFCSUY3NFUxUEhIQlhaNE9TUE9MTjVMUzNISTFZMDY4TE8yT1EzVUJHN0s2Sw==","email":"extern.thomas.hirmer@volkswagen.de"},"registry.connect.redhat.com":{"auth":"fHVoYy1wb29sLWVjOWYxMzI3LTE1YTctNDQ5Yy1iNTczLWVjNzI2MTUxMmEwZDpleUpoYkdjaU9pSlNVelV4TWlKOS5leUp6ZFdJaU9pSXhOR0UyTnpjNFptSXdNV0UwT0RFeVlqQXlPRFF3TTJRd09HVmhNakkzTUNKOS5zaVNuQV9aaUtNVDlLcXAxYWtIOVlGMHlGMGdXajY2TVJPa1htVXRPc0FBdDhVLXlXN3k3YVplbG5wNDRhLWJtVndqeG96NlZuLUxlMzZna2Z4YkVyYmlwOThZRFc4eWxuMGFVUDNsa0JJS2g4M3NycXk2YklRdnoyTWJPNUd6Z3FTblUzTGpYdWx0N2ZvRUZ6OXpUOTItcnpHRWZwTlNxSzdhczlmbFhWcTlkWU4tRDRLZmpuR0c5Zkhna3BmZDBrNDlvcmhiZWhjQlJlUVV1Y24wV2tocmNoMUNxS0RrM095WmlxOEpZTEtYRXBUbTc0TE0waVNYUFVXXzdDdGJoNkVkUjlLRTZIQzl4MXM3ek9CUkFORk9aM1Z3OUxyd3NKeTd1NzEyWVJCOXUzeUZzc3JrVjczZFUzZ2ppOFhmLU5oNE1CMkRMOFFvdHdnUHl1cnFUT1EweHNFR3p2Vkh0SEhBcWRjRmxLUm43RjlqWXhtQzB0MGtLM2VCU1lmTG9XdjBmVmdBQk1Fd3RCLW11WmlhUjNmVVk0RndkYVJocjVGcWNTbjRHc1h1UUc4bXBaVDFncjh4TjI2TUFQMVRHeWZOZ2R5aDRxeFFaY1NnU05jbENlS3Y1Zk5LRVd0T3ZBZnVJZURqZlR5T282V3cyVVRnbzh4c2tJZEl0dk1aZ19tRmFfRy1YWWEzd1lablRGNnF3Z0w1VFJzUGxYTmtXOTBxSXo3VkpWVHZ6UHlPZi1maktNX0FOcHJINWo1R1A0NEt6cWtZTjFfRHdaQlA3WkFDR2NUTnZQRTBLMk44eVNCUllOWGppSmJRdjlxWkJwODlVNzNyZ3Q1ZE5ncW1ycktremEtcVNwRGwtTFI4Zk5KeGJkbXd4czJra21YYXhYZEw1U3VzaHRjMA==","email":"extern.thomas.hirmer@volkswagen.de"},"registry.redhat.io":{"auth":"fHVoYy1wb29sLWVjOWYxMzI3LTE1YTctNDQ5Yy1iNTczLWVjNzI2MTUxMmEwZDpleUpoYkdjaU9pSlNVelV4TWlKOS5leUp6ZFdJaU9pSXhOR0UyTnpjNFptSXdNV0UwT0RFeVlqQXlPRFF3TTJRd09HVmhNakkzTUNKOS5zaVNuQV9aaUtNVDlLcXAxYWtIOVlGMHlGMGdXajY2TVJPa1htVXRPc0FBdDhVLXlXN3k3YVplbG5wNDRhLWJtVndqeG96NlZuLUxlMzZna2Z4YkVyYmlwOThZRFc4eWxuMGFVUDNsa0JJS2g4M3NycXk2YklRdnoyTWJPNUd6Z3FTblUzTGpYdWx0N2ZvRUZ6OXpUOTItcnpHRWZwTlNxSzdhczlmbFhWcTlkWU4tRDRLZmpuR0c5Zkhna3BmZDBrNDlvcmhiZWhjQlJlUVV1Y24wV2tocmNoMUNxS0RrM095WmlxOEpZTEtYRXBUbTc0TE0waVNYUFVXXzdDdGJoNkVkUjlLRTZIQzl4MXM3ek9CUkFORk9aM1Z3OUxyd3NKeTd1NzEyWVJCOXUzeUZzc3JrVjczZFUzZ2ppOFhmLU5oNE1CMkRMOFFvdHdnUHl1cnFUT1EweHNFR3p2Vkh0SEhBcWRjRmxLUm43RjlqWXhtQzB0MGtLM2VCU1lmTG9XdjBmVmdBQk1Fd3RCLW11WmlhUjNmVVk0RndkYVJocjVGcWNTbjRHc1h1UUc4bXBaVDFncjh4TjI2TUFQMVRHeWZOZ2R5aDRxeFFaY1NnU05jbENlS3Y1Zk5LRVd0T3ZBZnVJZURqZlR5T282V3cyVVRnbzh4c2tJZEl0dk1aZ19tRmFfRy1YWWEzd1lablRGNnF3Z0w1VFJzUGxYTmtXOTBxSXo3VkpWVHZ6UHlPZi1maktNX0FOcHJINWo1R1A0NEt6cWtZTjFfRHdaQlA3WkFDR2NUTnZQRTBLMk44eVNCUllOWGppSmJRdjlxWkJwODlVNzNyZ3Q1ZE5ncW1ycktremEtcVNwRGwtTFI4Zk5KeGJkbXd4czJra21YYXhYZEw1U3VzaHRjMA==","email":"extern.thomas.hirmer@volkswagen.de"}}}
 
