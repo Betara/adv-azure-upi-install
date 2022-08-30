@@ -56,7 +56,7 @@
       "metadata": {
         "description" : "IP address assigned to the internal api"
       }
-    },
+    }
   },
   "variables" : {
     "location" : "[resourceGroup().location]",
@@ -308,6 +308,6 @@
           }
         ]
       }
-    },
+    }
   ]
 }
